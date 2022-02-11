@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.RecapDao">
+
+    <resultMap type="Recap" id="RecapMap">
+        <result property="gameid" column="gameId" jdbcType="VARCHAR"/>
+        <result property="header" column="header" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="updtime" column="updTime" jdbcType="VARCHAR"/>
+        <result property="capture" column="capture" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RecapMap">
+        select gameId,
+        header,
+        content,
+        updTime,
+        capture
+        from nba.recap
+        where gameId = #{gameid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RecapMap">
+        select gameId,
+        header,
+        content,
+        updTime,
+        capture
+        from nba.recap
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="RecapMap">
+        select
+        gameId, header, content, updTime, capture
+        from nba.recap
+        <where>
+            <if test="gameid != null and gameid != ''">
+                and gameId = #{gameid}
+            </if>
+            <if test="header != null and header != ''">
+                and header = #{header}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="updtime != null and updtime != ''">
+                and updTime = #{updtime}
+            </if>
+            <if test="capture != null and capture != ''">
+                and capture = #{capture}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="gameid" useGeneratedKeys="true">
+        insert into nba.recap(header, content, updTime, capture)
+        values (#{header}, #{content}, #{updtime}, #{capture})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.recap
+        <set>
+            <if test="header != null and header != ''">
+                header = #{header},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="updtime != null and updtime != ''">
+                updTime = #{updtime},
+            </if>
+            <if test="capture != null and capture != ''">
+                capture = #{capture},
+            </if>
+        </set>
+        where gameId = #{gameid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.recap
+        where gameId = #{gameid}
+    </delete>
+
+    <select id="getRecapByDate" resultMap="RecapMap">
+        select gameId,
+        header,
+        content,
+        updTime,
+        capture
+        from recap
+        where cast(updTime as date) between #{foreDate} and #{backDate}
+        order by updTime ASC
+    </select>
+
+</mapper>

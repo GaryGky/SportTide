@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.PlayerScoreStatsDao">
+
+    <resultMap type="PlayerScoreStats" id="PlayerScoreStatsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="teamid" column="teamId" jdbcType="VARCHAR"/>
+        <result property="teamstatsid" column="teamStatsId" jdbcType="INTEGER"/>
+        <result property="playername" column="playerName" jdbcType="VARCHAR"/>
+        <result property="isfirst" column="isFirst" jdbcType="INTEGER"/>
+        <result property="position" column="position" jdbcType="VARCHAR"/>
+        <result property="playminute" column="playMinute" jdbcType="INTEGER"/>
+        <result property="shot" column="shot" jdbcType="VARCHAR"/>
+        <result property="threeshot" column="threeShot" jdbcType="VARCHAR"/>
+        <result property="penaltyshot" column="penaltyShot" jdbcType="VARCHAR"/>
+        <result property="frontcourt" column="frontCourt" jdbcType="INTEGER"/>
+        <result property="backcourt" column="backCourt" jdbcType="INTEGER"/>
+        <result property="rebound" column="rebound" jdbcType="INTEGER"/>
+        <result property="assist" column="assist" jdbcType="INTEGER"/>
+        <result property="foul" column="foul" jdbcType="INTEGER"/>
+        <result property="steal" column="steal" jdbcType="INTEGER"/>
+        <result property="fault" column="fault" jdbcType="INTEGER"/>
+        <result property="block" column="block" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
+        <result property="contribution" column="Contribution"
+                jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PlayerScoreStatsMap">
+        select id,
+        teamId,
+        teamStatsId,
+        playerName,
+        isFirst,
+        position,
+        playMinute,
+        shot,
+        threeShot,
+        penaltyShot,
+        frontCourt,
+        backCourt,
+        rebound,
+        assist,
+        foul,
+        steal,
+        fault,
+        block,
+        score,
+        Contribution
+        from nba.player_score_stats
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PlayerScoreStatsMap">
+        select id,
+        teamId,
+        teamStatsId,
+        playerName,
+        isFirst,
+        position,
+        playMinute,
+        shot,
+        threeShot,
+        penaltyShot,
+        frontCourt,
+        backCourt,
+        rebound,
+        assist,
+        foul,
+        steal,
+        fault,
+        block,
+        score,
+        Contribution
+        from nba.player_score_stats
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PlayerScoreStatsMap">
+        select
+        id, teamId, teamStatsId, playerName, isFirst, position, playMinute,
+        shot, threeShot, penaltyShot, frontCourt, backCourt, rebound, assist,
+        foul, steal, fault, block, score, Contribution
+        from nba.player_score_stats
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="teamid != null and teamid != ''">
+                and teamId = #{teamid}
+            </if>
+            <if test="teamstatsid != null">
+                and teamStatsId = #{teamstatsid}
+            </if>
+            <if test="playername != null and playername != ''">
+                and playerName = #{playername}
+            </if>
+            <if test="isfirst != null">
+                and isFirst = #{isfirst}
+            </if>
+            <if test="position != null and position != ''">
+                and position = #{position}
+            </if>
+            <if test="playminute != null">
+                and playMinute = #{playminute}
+            </if>
+            <if test="shot != null and shot != ''">
+                and shot = #{shot}
+            </if>
+            <if test="threeshot != null and threeshot != ''">
+                and threeShot = #{threeshot}
+            </if>
+            <if test="penaltyshot != null and penaltyshot != ''">
+                and penaltyShot = #{penaltyshot}
+            </if>
+            <if test="frontcourt != null">
+                and frontCourt = #{frontcourt}
+            </if>
+            <if test="backcourt != null">
+                and backCourt = #{backcourt}
+            </if>
+            <if test="rebound != null">
+                and rebound = #{rebound}
+            </if>
+            <if test="assist != null">
+                and assist = #{assist}
+            </if>
+            <if test="foul != null">
+                and foul = #{foul}
+            </if>
+            <if test="steal != null">
+                and steal = #{steal}
+            </if>
+            <if test="fault != null">
+                and fault = #{fault}
+            </if>
+            <if test="block != null">
+                and block = #{block}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="contribution != null">
+                and Contribution = #{contribution}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into nba.player_score_stats(teamId, teamStatsId, playerName,
+        isFirst, position, playMinute, shot,
+        threeShot, penaltyShot, frontCourt,
+        backCourt, rebound, assist, foul,
+        steal, fault, block, score,
+        Contribution)
+        values (#{teamid}, #{teamstatsid}, #{playername}, #{isfirst},
+        #{position}, #{playminute}, #{shot}, #{threeshot},
+        #{penaltyshot}, #{frontcourt}, #{backcourt}, #{rebound},
+        #{assist}, #{foul}, #{steal}, #{fault}, #{block}, #{score},
+        #{contribution})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.player_score_stats
+        <set>
+            <if test="teamid != null and teamid != ''">
+                teamId = #{teamid},
+            </if>
+            <if test="teamstatsid != null">
+                teamStatsId = #{teamstatsid},
+            </if>
+            <if test="playername != null and playername != ''">
+                playerName = #{playername},
+            </if>
+            <if test="isfirst != null">
+                isFirst = #{isfirst},
+            </if>
+            <if test="position != null and position != ''">
+                position = #{position},
+            </if>
+            <if test="playminute != null">
+                playMinute = #{playminute},
+            </if>
+            <if test="shot != null and shot != ''">
+                shot = #{shot},
+            </if>
+            <if test="threeshot != null and threeshot != ''">
+                threeShot = #{threeshot},
+            </if>
+            <if test="penaltyshot != null and penaltyshot != ''">
+                penaltyShot = #{penaltyshot},
+            </if>
+            <if test="frontcourt != null">
+                frontCourt = #{frontcourt},
+            </if>
+            <if test="backcourt != null">
+                backCourt = #{backcourt},
+            </if>
+            <if test="rebound != null">
+                rebound = #{rebound},
+            </if>
+            <if test="assist != null">
+                assist = #{assist},
+            </if>
+            <if test="foul != null">
+                foul = #{foul},
+            </if>
+            <if test="steal != null">
+                steal = #{steal},
+            </if>
+            <if test="fault != null">
+                fault = #{fault},
+            </if>
+            <if test="block != null">
+                block = #{block},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="contribution != null">
+                Contribution = #{contribution},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.player_score_stats
+        where id = #{id}
+    </delete>
+
+    <select id="queryByTeamStatsId" resultType="PlayerScoreStats">
+        select *
+        from player_score_stats
+        where teamStatsId = #{teamStatsId};
+    </select>
+
+    <select id="queryByGameId" resultType="PlayerScoreStats">
+        select *
+        from player_score_stats
+        where id like CONCAT(#{game_id},'___') order by id ASC ;
+    </select>
+
+</mapper>

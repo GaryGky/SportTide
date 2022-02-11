@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.UserDao">
+
+    <resultMap type="User" id="UserMap">
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
+        <result property="userPassword" column="user_password"
+                jdbcType="OTHER"/>
+        <result property="userNikename" column="user_nikename"
+                jdbcType="VARCHAR"/>
+        <result property="userTime" column="user_time" jdbcType="VARCHAR"/>
+        <result property="userStatus" column="user_status" jdbcType="INTEGER"/>
+        <result property="userHead" column="user_head" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserMap">
+        select user_id,
+        user_name,
+        user_email,
+        user_password,
+        user_nikename,
+        user_time,
+        user_status,
+        user_head
+        from nba.user
+        where user_id = #{userId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserMap">
+        select user_id,
+        user_name,
+        user_email,
+        user_password,
+        user_nikename,
+        user_time,
+        user_status,
+        user_head
+        from nba.user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserMap">
+        select
+        user_id, user_name, user_email, user_password, user_nikename, user_time,
+        user_status, user_head
+        from nba.user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                and user_email = #{userEmail}
+            </if>
+            <if test="userPassword != null">
+                and user_password = #{userPassword}
+            </if>
+            <if test="userNikename != null and userNikename != ''">
+                and user_nikename = #{userNikename}
+            </if>
+            <if test="userTime != null and userTime != ''">
+                and user_time = #{userTime}
+            </if>
+            <if test="userStatus != null">
+                and user_status = #{userStatus}
+            </if>
+            <if test="userHead != null">
+                and user_head = #{userHead}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="userId" useGeneratedKeys="true">
+        insert into nba.user(user_id, user_name, user_email, user_password,
+        user_nikename, user_time, user_status, user_head)
+        values (#{userId}, #{userName}, #{userEmail},
+        AES_ENCRYPT(#{userPassword}, "hupu"),
+        #{userNikename},
+        #{userTime}, #{userStatus}, #{userHead})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.user
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                user_email = #{userEmail},
+            </if>
+            <if test="userPassword != null">
+                user_password = AES_ENCRYPT(#{userPassword}, "hupu"),
+            </if>
+            <if test="userNikename != null and userNikename != ''">
+                user_nikename = #{userNikename},
+            </if>
+            <if test="userTime != null and userTime != ''">
+                user_time = #{userTime},
+            </if>
+            <if test="userStatus != null">
+                user_status = #{userStatus},
+            </if>
+            <if test="userHead != null">
+                user_head = #{userHead},
+            </if>
+        </set>
+        where user_id = #{userId} or user_name=#{userName}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.user
+        where user_id = #{userId}
+    </delete>
+
+    <select id="getPwdByUserName" resultType="String">
+        select AES_DECRYPT(user_password, "hupu")
+        from user
+        where user_name = #{user_name}
+    </select>
+
+    <select id="getUserByUserName" resultMap="UserMap">
+        select user_id,
+        user_name,
+        user_email,
+        AES_DECRYPT(user_password, "hupu"),
+        user_nikename,
+        user_time,
+        user_status,
+        user_head
+        from nba.user
+        where user_name = #{user_name}
+    </select>
+
+    <select id="getAllUserName" resultType="String">
+        select user_name
+        from user;
+    </select>
+
+
+</mapper>

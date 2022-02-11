@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.PostDao">
+
+    <resultMap type="Post" id="PostMap">
+        <result property="postId" column="post_id" jdbcType="INTEGER"/>
+        <result property="postTitle" column="post_title" jdbcType="VARCHAR"/>
+        <result property="postContent" column="post_content"
+                jdbcType="VARCHAR"/>
+        <result property="postTime" column="post_time" jdbcType="VARCHAR"/>
+        <result property="postCommentnum" column="post_commentnum"
+                jdbcType="INTEGER"/>
+        <result property="adminId" column="admin_id" jdbcType="INTEGER"/>
+        <result property="imgUrl" column="img_url" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PostMap">
+        select post_id,
+               post_title,
+               post_content,
+               post_time,
+               post_commentnum,
+               admin_id,
+               img_url
+        from nba.post
+        where post_id = #{postId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PostMap">
+        select post_id,
+               post_title,
+               post_content,
+               post_time,
+               post_commentnum,
+               admin_id,
+               img_url
+        from nba.post
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询最新的新闻-->
+    <select id="getHomePost" resultType="Map">
+        select po.post_title    as title,
+               po.post_time     as time,
+               po.post_content  as content,
+               admin.admin_name as admin
+        from post po,
+             admins admin
+        where po.admin_id = admin.admin_id
+        order by cast(po.post_time as datetime) desc
+        limit 0, 5
+    </select>
+
+    <select id="getTotalInfo" resultType="int">
+        select total
+        from (select count(user_id) as total
+              from user
+              union all
+              select count(gameId)
+              from game
+              union all
+              select count(post_id)
+              from post
+              union all
+              select count(comment_id)
+              from comment
+              union all
+              select count(id)
+              from game_collection) as T;
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PostMap">
+        select
+        post_id, post_title, post_content, post_time, post_commentnum, admin_id,
+        img_url
+        from nba.post
+        <where>
+            <if test="postId != null">
+                and post_id = #{postId}
+            </if>
+            <if test="postTitle != null and postTitle != ''">
+                and post_title = #{postTitle}
+            </if>
+            <if test="postContent != null and postContent != ''">
+                and post_content = #{postContent}
+            </if>
+            <if test="postTime != null and postTime != ''">
+                and post_time = #{postTime}
+            </if>
+            <if test="postCommentnum != null">
+                and post_commentnum = #{postCommentnum}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="imgUrl != null and imgUrl != ''">
+                and img_url = #{imgUrl}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="postId" useGeneratedKeys="true">
+        insert into nba.post(post_title, post_content, post_time,
+                             post_commentnum, admin_id, img_url)
+        values (#{postTitle}, #{postContent}, #{postTime},
+                #{postCommentnum}, #{adminId}, #{imgUrl})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.post
+        <set>
+            <if test="postTitle != null and postTitle != ''">
+                post_title = #{postTitle},
+            </if>
+            <if test="postContent != null and postContent != ''">
+                post_content = #{postContent},
+            </if>
+            <if test="postTime != null and postTime != ''">
+                post_time = #{postTime},
+            </if>
+            <if test="postCommentnum != null">
+                post_commentnum = #{postCommentnum},
+            </if>
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+            <if test="imgUrl != null and imgUrl != ''">
+                img_url = #{imgUrl},
+            </if>
+        </set>
+        where post_id = #{postId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.post
+        where post_id = #{postId}
+    </delete>
+
+    <insert id="createPost">
+        insert into post (post_title, post_content, post_time, admin_id,
+                          img_url)
+        values (#{post_title}, #{post_content}, #{post_time}, #{admin_id},
+                #{img_url});
+    </insert>
+
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.FutureGamesDao">
+
+    <resultMap type="FutureGames" id="FutureGamesMap">
+        <result property="gameid" column="gameId" jdbcType="VARCHAR"/>
+        <result property="home" column="home" jdbcType="VARCHAR"/>
+        <result property="away" column="away" jdbcType="VARCHAR"/>
+        <result property="gametime" column="gameTime" jdbcType="VARCHAR"/>
+        <result property="homeWinRate" column="home_win_rate"
+                jdbcType="VARCHAR"/>
+        <result property="awayWinRate" column="away_win_rate"
+                jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FutureGamesMap">
+        select gameId,
+               home,
+               away,
+               gameTime,
+               home_win_rate,
+               away_win_rate
+        from nba.future_games
+        where gameId = #{gameid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FutureGamesMap">
+        select gameId,
+               home,
+               away,
+               gameTime,
+               home_win_rate,
+               away_win_rate
+        from nba.future_games
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FutureGamesMap">
+        select
+        gameId, home, away, gameTime, home_win_rate, away_win_rate
+        from nba.future_games
+        <where>
+            <if test="gameid != null and gameid != ''">
+                and gameId = #{gameid}
+            </if>
+            <if test="home != null and home != ''">
+                and home = #{home}
+            </if>
+            <if test="away != null and away != ''">
+                and away = #{away}
+            </if>
+            <if test="gametime != null and gametime != ''">
+                and gameTime = #{gametime}
+            </if>
+            <if test="homeWinRate != null and homeWinRate != ''">
+                and home_win_rate = #{homeWinRate}
+            </if>
+            <if test="awayWinRate != null and awayWinRate != ''">
+                and away_win_rate = #{awayWinRate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="gameid" useGeneratedKeys="true">
+        insert into nba.future_games(home, away, gameTime, home_win_rate,
+                                     away_win_rate)
+        values (#{home}, #{away}, #{gametime}, #{homeWinRate}, #{awayWinRate})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.future_games
+        <set>
+            <if test="home != null and home != ''">
+                home = #{home},
+            </if>
+            <if test="away != null and away != ''">
+                away = #{away},
+            </if>
+            <if test="gametime != null and gametime != ''">
+                gameTime = #{gametime},
+            </if>
+            <if test="homeWinRate != null and homeWinRate != ''">
+                home_win_rate = #{homeWinRate},
+            </if>
+            <if test="awayWinRate != null and awayWinRate != ''">
+                away_win_rate = #{awayWinRate},
+            </if>
+        </set>
+        where gameId = #{gameid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.future_games
+        where gameId = #{gameid}
+    </delete>
+
+    <select id="getFutureGameByDate" resultMap="FutureGamesMap">
+        select *
+        from future_games
+        where gameTime like #{date}
+        order by gameId ASC;
+    </select>
+
+
+    <select id="getStatsByTeam" resultType="int">
+        select count(distinct id)
+        from team_score_stats
+        where teamId = #{teamId}
+          and gameId in (select gameId
+                         from season2019);
+    </select>
+
+    <select id="getAllGames" resultType="int">
+        select count(*)
+        from team_score_stats
+        where teamId = #{teamId}
+          and gameId in (select gameId from season2019);
+    </select>
+
+    <select id="getWinGames" resultType="int">
+        select count(*)
+        from team_score_stats teamA,
+             team_score_stats teamB
+        where teamA.gameId = teamB.gameId
+          and teamA.teamId = #{teamId}
+          and teamA.score > teamB
+            .score
+          and teamA.gameId in (select gameId from season2019);
+    </select>
+
+    <select id="getFutureAVGShot" resultType="Map">
+        select SUM(shotHelp.shotIn)       as goal,
+               SUM(shotHelp.shotAll)      as shot,
+               SUM(shotHelp.threeShotIn)  as goal3,
+               SUM(shotHelp.threeShotAll) as shot3
+        from player_shot_help shotHelp
+        where teamId = #{teamId}
+          and teamStatsId between #{min} and #{max};
+    </select>
+
+    <select id="getFutureSUMScore" resultType="Map">
+        select SUM(score)      as score,
+               SUM(backCourt)  as backcourt,
+               SUM(frontCourt) as frontcourt,
+               SUM(assist)     as assist,
+               SUM(steal)      as steal,
+               SUM(block)      as block
+        from player_score_stats
+        where teamId = #{teamId}
+          and teamStatsId between #{min} and #{max};
+    </select>
+
+    <select id="getMinMax" resultType="Map">
+        select min(gameId) * 10 as min, MAX(gameId) * 10 + 1 as max
+        from season2019
+    </select>
+</mapper>

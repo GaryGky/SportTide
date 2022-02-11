@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间绑定一个对应的DAO/MAPPER命名接口-->
+<mapper namespace="com.hupu.dao.ScoreMapper">
+    <select id="queryScoreByTeam" parameterType="String"
+            resultType="Score">
+        select * from score where Team = #{Team};
+    </select>
+
+    <select id="queryScoreByDate" parameterType="String"
+            resultType="Score">
+        select * from score where Date = #{Date};
+    </select>
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.TeamDao">
+
+    <resultMap type="Team" id="TeamMap">
+        <result property="teamid" column="teamId" jdbcType="VARCHAR"/>
+        <result property="teamname" column="teamName" jdbcType="VARCHAR"/>
+        <result property="buildtime" column="buildTime" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="homecourt" column="homeCourt" jdbcType="VARCHAR"/>
+        <result property="chiefcoach" column="chiefCoach" jdbcType="VARCHAR"/>
+        <result property="logourl" column="logoUrl" jdbcType="VARCHAR"/>
+        <result property="website" column="website" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="PlayerScoreStatsMap" type="Map">
+
+        <result property="teamstatsid" column="teamStatsId" jdbcType="INTEGER"/>
+        <result property="frontcourt" column="frontCourt"
+                jdbcType="INTEGER"/>
+        <result property="backcourt" column="backCourt"
+                jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TeamMap">
+        select teamId,
+        teamName,
+        buildTime,
+        area,
+        homeCourt,
+        chiefCoach,
+        logoUrl,
+        website,
+        description
+        from nba.team
+        where teamId = #{teamid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TeamMap">
+        select teamId,
+        teamName,
+        buildTime,
+        area,
+        homeCourt,
+        chiefCoach,
+        logoUrl,
+        website,
+        description
+        from nba.team
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TeamMap">
+        select
+        teamId, teamName, buildTime, area, homeCourt, chiefCoach, logoUrl,
+        website, description
+        from nba.team
+        <where>
+            <if test="teamid != null and teamid != ''">
+                and teamId = #{teamid}
+            </if>
+            <if test="teamname != null and teamname != ''">
+                and teamName = #{teamname}
+            </if>
+            <if test="buildtime != null and buildtime != ''">
+                and buildTime = #{buildtime}
+            </if>
+            <if test="area != null and area != ''">
+                and area = #{area}
+            </if>
+            <if test="homecourt != null and homecourt != ''">
+                and homeCourt = #{homecourt}
+            </if>
+            <if test="chiefcoach != null and chiefcoach != ''">
+                and chiefCoach = #{chiefcoach}
+            </if>
+            <if test="logourl != null and logourl != ''">
+                and logoUrl = #{logourl}
+            </if>
+            <if test="website != null and website != ''">
+                and website = #{website}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="teamid" useGeneratedKeys="true">
+        insert into nba.team(teamName, buildTime, area, homeCourt, chiefCoach,
+        logoUrl, website, description)
+        values (#{teamname}, #{buildtime}, #{area}, #{homecourt}, #{chiefcoach},
+        #{logourl}, #{website}, #{description})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.team
+        <set>
+            <if test="teamname != null and teamname != ''">
+                teamName = #{teamname},
+            </if>
+            <if test="buildtime != null and buildtime != ''">
+                buildTime = #{buildtime},
+            </if>
+            <if test="area != null and area != ''">
+                area = #{area},
+            </if>
+            <if test="homecourt != null and homecourt != ''">
+                homeCourt = #{homecourt},
+            </if>
+            <if test="chiefcoach != null and chiefcoach != ''">
+                chiefCoach = #{chiefcoach},
+            </if>
+            <if test="logourl != null and logourl != ''">
+                logoUrl = #{logourl},
+            </if>
+            <if test="website != null and website != ''">
+                website = #{website},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+        </set>
+        where teamId = #{teamid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.team
+        where teamId = #{teamid}
+    </delete>
+</mapper>

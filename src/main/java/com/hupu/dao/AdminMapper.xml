@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间绑定一个对应的DAO/MAPPER命名接口-->
+<mapper namespace="com.hupu.dao.AdminMapper">
+    <insert id="createAdmin">
+        insert into admins (admin_name, admin_pwd)
+        values (#{name}, AES_ENCRYPT(#{pwd}, "hupu"));
+    </insert>
+
+    <update id="updateAdminPwd">
+        update admins
+        set admin_pwd = AES_ENCRYPT(#{newPwd}, "hupu")
+        where admin_id = #{admin_id};
+    </update>
+
+    <update id="updateAdminName">
+        update admins
+        set admin_name = #{newName}
+        where admin_id = #{admin_id};
+    </update>
+
+    <select id="queryAllAdmins" resultType="Admin">
+        select *
+        from admins
+    </select>
+
+    <select id="queryAdminPwdById" resultType="String">
+        select AES_DECRYPT(admin_pwd, "hupu")
+        from admins
+        where admin_id = #{admin_id}
+    </select>
+
+    <select id="queryPwdByName" resultType="String">
+        select AES_DECRYPT(admin_pwd, "hupu")
+        from admins
+        where admin_name = #{admin_name}
+    </select>
+
+
+    <select id="queryAdminById" resultType="Admin">
+        select *
+        from admins
+        where admin_id = #{admin_id}
+    </select>
+
+    <delete id="deleteAdminById">
+        delete
+        from admins
+        where admin_id = #{admin_id}
+    </delete>
+
+    <select id="queryIdByName" resultType="int">
+        select admin_id
+        from admins
+        where admin_name = #{admin_name}
+    </select>
+
+</mapper>

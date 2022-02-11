@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.FeedBackDao">
+
+    <resultMap type="FeedBack" id="FeedBackMap">
+        <result property="feedbackId" column="feedbackId" jdbcType="INTEGER"/>
+        <result property="user_id" column="user_id" jdbcType="INTEGER"/>
+        <result property="feedback_content" column="feedback_content"
+                jdbcType="VARCHAR"/>
+        <result property="feedback_time" column="feedback_time"
+                jdbcType="VARCHAR"/>
+        <result property="reply" column="reply"
+                jdbcType="VARCHAR"/>
+        <result property="reply_time" column="reply_time"
+                jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FeedBackMap">
+        select *
+        from nba.userfeedback
+        where feedbackId = #{feedbackId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FeedBackMap">
+        select *
+        from nba.userfeedback
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="getFeedBackByUserId" resultMap="FeedBackMap">
+        select *
+        from nba.userfeedback
+        where user_id = #{user_id}
+    </select>
+
+    <insert id="insertFeedBack" keyProperty="feedbackId" useGeneratedKeys="true">
+        insert into nba.userfeedback(feedback_content, feedback_time, user_id, reply, reply_time)
+        values (#{feedback_content}, #{feedback_time}, #{user_id}, null , null)
+    </insert>
+
+    <update id="addReply">
+        update nba.userfeedback
+        set reply = #{reply},
+            reply_time = #{reply_time}
+        where feedbackId = #{feedbackId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.userfeedback
+        where feedbackId = #{feedbackId}
+    </delete>
+
+    <select id="queryAllFeedBacks" resultMap="FeedBackMap">
+        select feedbackId, feedback_content, feedback_time, reply, reply_time, user_id
+        from nba.userfeedback
+    </select>
+
+</mapper>

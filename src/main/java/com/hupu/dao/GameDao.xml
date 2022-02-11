@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.GameDao">
+
+    <resultMap type="Game" id="GameMap">
+        <result property="gameid" column="gameId" jdbcType="INTEGER"/>
+        <result property="gametime" column="gameTime" jdbcType="VARCHAR"/>
+        <result property="consumtime" column="consumTime" jdbcType="VARCHAR"/>
+        <result property="arena" column="arena" jdbcType="VARCHAR"/>
+        <result property="peoplenum" column="peopleNum" jdbcType="VARCHAR"/>
+        <result property="homeScore" column="homeScore" jdbcType="INTEGER"/>
+        <result property="awayScore" column="awayScore" jdbcType="INTEGER"/>
+        <result property="homeTeam" column="homeTeam" jdbcType="VARCHAR"/>
+        <result property="awayTeam" column="awayTeam" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="GameMap">
+        select game.gameId,
+               gameTime,
+               consumTime,
+               arena,
+               peopleNum,
+               home.score  as homeScore,
+               away.score  as awayScore,
+               home.teamId as homeTeam,
+               away.teamId as awayTeam
+        from nba.game game,
+             nba.team_score_stats home,
+             nba.team_score_stats away
+        where game.gameId = #{gameid}
+          and home.gameId = #{gameid}
+          and away.gameId = #{gameid}
+          and home.isHome = 1
+          and away.isHome = 0
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="GameMap">
+        select gameId,
+               gameTime,
+               consumTime,
+               arena,
+               peopleNum
+        from nba.game
+        order by gameId ASC
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="GameMap">
+        select
+        gameId, gameTime, consumTime, arena, peopleNum
+        from nba.game
+        <where>
+            <if test="gameid != null">
+                and gameId = #{gameid}
+            </if>
+            <if test="gametime != null and gametime != ''">
+                and gameTime = #{gametime}
+            </if>
+            <if test="consumtime != null and consumtime != ''">
+                and consumTime = #{consumtime}
+            </if>
+            <if test="arena != null and arena != ''">
+                and arena = #{arena}
+            </if>
+            <if test="peoplenum != null and peoplenum != ''">
+                and peopleNum = #{peoplenum}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="gameid" useGeneratedKeys="true">
+        insert into nba.game(gameTime, consumTime, arena, peopleNum)
+        values (#{gametime}, #{consumtime}, #{arena}, #{peoplenum})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.game
+        <set>
+            <if test="gametime != null and gametime != ''">
+                gameTime = #{gametime},
+            </if>
+            <if test="consumtime != null and consumtime != ''">
+                consumTime = #{consumtime},
+            </if>
+            <if test="arena != null and arena != ''">
+                arena = #{arena},
+            </if>
+            <if test="peoplenum != null and peoplenum != ''">
+                peopleNum = #{peoplenum},
+            </if>
+        </set>
+        where gameId = #{gameid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.game
+        where gameId = #{gameid}
+    </delete>
+
+
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.PlayerShotHelpDao">
+
+    <resultMap type="PlayerShotHelp" id="PlayerShotHelpMap">
+        <result property="teamid" column="teamId" jdbcType="VARCHAR"/>
+        <result property="teamstatsid" column="teamStatsId" jdbcType="INTEGER"/>
+        <result property="playername" column="playerName" jdbcType="VARCHAR"/>
+        <result property="shotin" column="shotIn" jdbcType="INTEGER"/>
+        <result property="shotall" column="shotAll" jdbcType="INTEGER"/>
+        <result property="threeshotin" column="threeShotIn" jdbcType="INTEGER"/>
+        <result property="threeshotall" column="threeShotAll"
+                jdbcType="INTEGER"/>
+        <result property="penaltyin" column="penaltyIn" jdbcType="INTEGER"/>
+        <result property="penaltyall" column="penaltyAll" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="PlayerShotHelpMap">
+        select teamId,
+               teamStatsId,
+               playerName,
+               shotIn,
+               shotAll,
+               threeShotIn,
+               threeShotAll,
+               penaltyIn,
+               penaltyAll
+        from nba.player_shot_help
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="PlayerShotHelpMap">
+        select teamId,
+               teamStatsId,
+               playerName,
+               shotIn,
+               shotAll,
+               threeShotIn,
+               threeShotAll,
+               penaltyIn,
+               penaltyAll
+        from nba.player_shot_help
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="PlayerShotHelpMap">
+        select
+        teamId, teamStatsId, playerName, shotIn, shotAll, threeShotIn,
+        threeShotAll, penaltyIn, penaltyAll
+        from nba.player_shot_help
+        <where>
+            <if test="teamid != null">
+                and teamId = #{teamid}
+            </if>
+            <if test="teamstatsid != null">
+                and teamStatsId = #{teamstatsid}
+            </if>
+            <if test="playername != null and playername != ''">
+                and playerName = #{playername}
+            </if>
+            <if test="shotin != null">
+                and shotIn = #{shotin}
+            </if>
+            <if test="shotall != null">
+                and shotAll = #{shotall}
+            </if>
+            <if test="threeshotin != null">
+                and threeShotIn = #{threeshotin}
+            </if>
+            <if test="threeshotall != null">
+                and threeShotAll = #{threeshotall}
+            </if>
+            <if test="penaltyin != null">
+                and penaltyIn = #{penaltyin}
+            </if>
+            <if test="penaltyall != null">
+                and penaltyAll = #{penaltyall}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into nba.player_shot_help(id, teamId, teamStatsId, playerName,
+                                         shotIn, shotAll, threeShotIn,
+                                         threeShotAll, penaltyIn, penaltyAll)
+        values (#{id}, #{teamid}, #{teamstatsid}, #{playername}, #{shotin},
+                #{shotall}, #{threeshotin}, #{threeshotall}, #{penaltyin},
+                #{penaltyall})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.player_shot_help
+        <set>
+            <if test="teamid != null">
+                teamId = #{teamid},
+            </if>
+            <if test="teamstatsid != null">
+                teamStatsId = #{teamstatsid},
+            </if>
+            <if test="playername != null and playername != ''">
+                playerName = #{playername},
+            </if>
+            <if test="shotin != null">
+                shotIn = #{shotin},
+            </if>
+            <if test="shotall != null">
+                shotAll = #{shotall},
+            </if>
+            <if test="threeshotin != null">
+                threeShotIn = #{threeshotin},
+            </if>
+            <if test="threeshotall != null">
+                threeShotAll = #{threeshotall},
+            </if>
+            <if test="penaltyin != null">
+                penaltyIn = #{penaltyin},
+            </if>
+            <if test="penaltyall != null">
+                penaltyAll = #{penaltyall},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.player_shot_help
+        where id = #{id}
+    </delete>
+
+    <insert id="insertAll" keyProperty="id" useGeneratedKeys="true"
+            parameterType="java.util.List">
+        insert into player_shot_help(id,teamId, teamStatsId, playerName,
+        shotIn, shotAll, threeShotIn,
+        threeShotAll, penaltyIn, penaltyAll)
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.id},#{item.teamid}, #{item.teamstatsid},
+            #{item.playername},
+            #{item.shotin},
+            #{item.shotall}, #{item.threeshotin}, #{item.threeshotall},
+            #{item.penaltyin},
+            #{item.penaltyall})
+        </foreach>
+    </insert>
+
+</mapper>

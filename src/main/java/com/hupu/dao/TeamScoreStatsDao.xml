@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.TeamScoreStatsDao">
+
+    <resultMap type="TeamScoreStats" id="TeamScoreStatsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="teamid" column="teamId" jdbcType="VARCHAR"/>
+        <result property="gameid" column="gameId" jdbcType="INTEGER"/>
+        <result property="ishome" column="isHome" jdbcType="INTEGER"/>
+        <result property="score1" column="score1" jdbcType="INTEGER"/>
+        <result property="score2" column="score2" jdbcType="INTEGER"/>
+        <result property="score3" column="score3" jdbcType="INTEGER"/>
+        <result property="score4" column="score4" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TeamScoreStatsMap">
+        select id,
+        teamId,
+        gameId,
+        isHome,
+        score1,
+        score2,
+        score3,
+        score4,
+        score
+        from nba.team_score_stats
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TeamScoreStatsMap">
+        select id,
+        teamId,
+        gameId,
+        isHome,
+        score1,
+        score2,
+        score3,
+        score4,
+        score
+        from nba.team_score_stats
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TeamScoreStatsMap">
+        select
+        id, teamId, gameId, isHome, score1, score2, score3, score4, score
+        from nba.team_score_stats
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="teamid != null and teamid != ''">
+                and teamId = #{teamid}
+            </if>
+            <if test="gameid != null">
+                and gameId = #{gameid}
+            </if>
+            <if test="ishome != null">
+                and isHome = #{ishome}
+            </if>
+            <if test="score1 != null">
+                and score1 = #{score1}
+            </if>
+            <if test="score2 != null">
+                and score2 = #{score2}
+            </if>
+            <if test="score3 != null">
+                and score3 = #{score3}
+            </if>
+            <if test="score4 != null">
+                and score4 = #{score4}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into nba.team_score_stats(teamId, gameId, isHome, score1, score2,
+        score3, score4, score)
+        values (#{teamid}, #{gameid}, #{ishome}, #{score1}, #{score2},
+        #{score3}, #{score4}, #{score})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.team_score_stats
+        <set>
+            <if test="teamid != null and teamid != ''">
+                teamId = #{teamid},
+            </if>
+            <if test="gameid != null">
+                gameId = #{gameid},
+            </if>
+            <if test="ishome != null">
+                isHome = #{ishome},
+            </if>
+            <if test="score1 != null">
+                score1 = #{score1},
+            </if>
+            <if test="score2 != null">
+                score2 = #{score2},
+            </if>
+            <if test="score3 != null">
+                score3 = #{score3},
+            </if>
+            <if test="score4 != null">
+                score4 = #{score4},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+        </set>
+        where id = #{id} or gameid = #{gameid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.team_score_stats
+        where id = #{id}
+    </delete>
+
+    <select id="getTeamStatsByGameId" resultType="TeamScoreStats">
+        select distinct *
+        from team_score_stats
+        where gameId = #{game_id}
+        order by isHome ASC
+    </select>
+
+    <select id="getGameIndex" resultType="TeamScoreStats">
+        select *
+        from team_score_stats
+        where gameId in
+        (select gameId
+        from game
+        where gameTime like
+        #{date})
+        order by id ASC;
+    </select>
+
+</mapper>

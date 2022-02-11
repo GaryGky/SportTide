@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.dao.VersionInfoDao">
+
+    <resultMap type="VersionInfo" id="VersionInfoMap">
+        <result property="versionCode" column="version_code"
+                jdbcType="INTEGER"/>
+        <result property="versionName" column="version_name"
+                jdbcType="VARCHAR"/>
+        <result property="forceUpdate" column="force_update" jdbcType="OTHER"/>
+        <result property="updateUrl" column="update_url" jdbcType="VARCHAR"/>
+        <result property="updateInfo" column="update_info" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="VersionInfoMap">
+        select version_code,
+               version_name,
+               force_update,
+               update_url,
+               update_info
+        from nba.version_info
+        where version_code = #{versionCode}
+    </select>
+    <select id="getMaxVersionCode" resultMap="VersionInfoMap">
+        select version_code,
+               version_name,
+               force_update,
+               update_url,
+               update_info
+        from nba.version_info vi
+        where not exists(select *
+                         from version_info vi2
+                         where vi2.version_code > vi.version_code)
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="VersionInfoMap">
+        select version_code,
+               version_name,
+               force_update,
+               update_url,
+               update_info
+        from nba.version_info
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="VersionInfoMap">
+        select
+        version_code, version_name, force_update, update_url, update_info
+        from nba.version_info
+        <where>
+            <if test="versionCode != null">
+                and version_code = #{versionCode}
+            </if>
+            <if test="versionName != null and versionName != ''">
+                and version_name = #{versionName}
+            </if>
+            <if test="forceUpdate != null">
+                and force_update = #{forceUpdate}
+            </if>
+            <if test="updateUrl != null and updateUrl != ''">
+                and update_url = #{updateUrl}
+            </if>
+            <if test="updateInfo != null and updateInfo != ''">
+                and update_info = #{updateInfo}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="versionCode" useGeneratedKeys="true">
+        insert into nba.version_info(version_code, version_name, force_update,
+                                     update_url,
+                                     update_info)
+        values (#{versionCode}, #{versionName}, #{forceUpdate}, #{updateUrl},
+                #{updateInfo})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update nba.version_info
+        <set>
+            <if test="versionName != null and versionName != ''">
+                version_name = #{versionName},
+            </if>
+            <if test="forceUpdate != null">
+                force_update = #{forceUpdate},
+            </if>
+            <if test="updateUrl != null and updateUrl != ''">
+                update_url = #{updateUrl},
+            </if>
+            <if test="updateInfo != null and updateInfo != ''">
+                update_info = #{updateInfo},
+            </if>
+        </set>
+        where version_code = #{versionCode}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from nba.version_info
+        where version_code = #{versionCode}
+    </delete>
+
+</mapper>
